@@ -183,7 +183,7 @@ const SECTIONS = [
       {k:'tipo_cedula', l:'Tipo de cédula', type:'select', opts:['nacional de identidad','nacional de identidad para extranjeros'], d:'nacional de identidad para extranjeros'},
       {k:'cedula_repr', l:'N° de cédula del representante', d:'22.909.193-K'},
       {k:'domicilio_empresa', l:'Domicilio de la empresa', d:'calle Santo Domingo N°1061, comuna de Santiago, Región Metropolitana'},
-      {k:'nombre_concurso', l:'Nombre del concurso', d:'1 AÑO DE GAS GRATIS BAJO TU TAPITA'},
+      {k:'nombre_concurso', l:'Nombre del concurso', d:'1 AÑO DE GAS GRATIS CON RUTPAY'},
   ]},
   { title:'Vigencia y cobertura', icon:'1', fields:[
       {k:'periodo_inicio', l:'Inicio del período de vigencia', d:'1 de noviembre de 2025'},
@@ -387,7 +387,7 @@ document.getElementById('wordBtn').onclick=()=>{
     ol{margin:0 0 8px 30px} li{text-align:justify;margin-bottom:3px}
     .sign{text-align:center;margin-top:36px}
     .sign .line{border-top:1px solid #555;width:230px;margin:28px auto 5px}
-    .missing{font-weight:normal}
+    .missing{background:#ffff00;color:#000;font-weight:bold}
   `;
   const pre="<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Bases del Concurso</title><style>"+wStyle+"</style></head><body>";
   const html=pre+doc.innerHTML+"</body></html>";
