@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Generador de Bases Legales · Concursos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16202b; --ink-soft:#2b3a47; --slate:#1b2733; --slate-2:#243340;
+    --paper:#fcfbf7; --paper-edge:#ece7da;
+    --field-bg:#eef1f4; --field-bg-2:#e4e9ee; --line:#d4dae0;
+    --accent:#cf6322; --accent-soft:#f6e3d4; --accent-ink:#8a3d10;
+    --muted:#6b7884; --doc-text:#23282c; --shadow:0 10px 40px rgba(20,32,43,.14);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--field-bg-2);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .app{display:flex;flex-direction:column;height:100vh;min-height:0}
+
+  /* ---------- Top bar ---------- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 20px;background:var(--slate);color:#fff;border-bottom:3px solid var(--accent);flex:0 0 auto}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .flame{width:34px;height:34px;border-radius:9px;flex:0 0 auto;background:linear-gradient(150deg,#f0a64b,var(--accent) 60%,#a8420f);display:grid;place-items:center;box-shadow:0 3px 10px rgba(207,99,34,.4)}
+  .flame svg{width:18px;height:18px}
+  .brand h1{font-size:15px;font-weight:700;margin:0;line-height:1.15;letter-spacing:.1px}
+  .brand p{margin:1px 0 0;font-size:11.5px;color:#9fb0bd;font-weight:500}
+  .actions{display:flex;gap:8px;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end}
+  .sep{width:1px;align-self:stretch;background:rgba(255,255,255,.16);margin:2px 2px}
+  button{font-family:inherit;cursor:pointer;border:none;border-radius:8px;font-weight:600;font-size:13px;transition:.15s}
+  .tb{display:flex;align-items:center;gap:7px;padding:9px 13px}
+  .tb svg{width:15px;height:15px;flex:0 0 auto}
+  .btn-ghost{background:rgba(255,255,255,.08);color:#dbe4ea;border:1px solid rgba(255,255,255,.16)}
+  .btn-ghost:hover{background:rgba(255,255,255,.16)}
+  .btn-accent{background:var(--accent);color:#fff}
+  .btn-accent:hover{background:#b8551b}
+  .btn-dark{background:#0f1820;color:#e7eef3;border:1px solid rgba(255,255,255,.14)}
+  .btn-dark:hover{background:#08111a}
+
+  /* ---------- Workspace ---------- */
+  .workspace{flex:1 1 auto;display:flex;min-height:0}
+
+  /* ---------- Form panel ---------- */
+  .panel{width:40%;max-width:540px;min-width:340px;flex:0 0 auto;background:linear-gradient(180deg,#f4f6f8,#e9edf1);border-right:1px solid var(--line);overflow-y:auto}
+  .panel-inner{padding:18px 20px 60px}
+  .intro{font-size:12.5px;color:var(--muted);line-height:1.5;margin:2px 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .intro b{color:var(--ink-soft)}
+
+  details.sec{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:11px;overflow:hidden}
+  details.sec[open]{box-shadow:0 2px 14px rgba(27,39,51,.06)}
+  summary{list-style:none;cursor:pointer;padding:13px 15px;display:flex;align-items:center;gap:11px;font-weight:600;font-size:13.5px;color:var(--ink);user-select:none}
+  summary::-webkit-details-marker{display:none}
+  .sec-num{width:22px;height:22px;border-radius:6px;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:700;display:grid;place-items:center;flex:0 0 auto}
+  .chev{margin-left:auto;transition:.2s;color:var(--muted)}
+  details[open] .chev{transform:rotate(90deg)}
+  .sec-body{padding:4px 15px 16px;border-top:1px solid #eef1f3}
+
+  .field{margin-top:13px}
+  .field:first-child{margin-top:6px}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px}
+  .field .hint{font-weight:400;color:var(--muted);font-size:11px}
+  .field-ctrl{display:flex;gap:7px;align-items:flex-start}
+  .field-ctrl input,.field-ctrl textarea,.field-ctrl select{flex:1 1 auto;min-width:0;font-family:inherit;font-size:13px;color:var(--ink);background:var(--field-bg);border:1px solid transparent;border-radius:8px;padding:9px 11px;transition:.15s}
+  .field-ctrl textarea{resize:vertical;min-height:76px;line-height:1.5}
+  .field-ctrl input:focus,.field-ctrl textarea:focus,.field-ctrl select:focus{outline:none;background:#fff;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .mini-reset,.mini-clear{flex:0 0 auto;width:34px;height:36px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--muted);display:grid;place-items:center}
+  .mini-reset:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
+  .mini-clear:hover{color:#c0392b;border-color:#e3a99f;background:#fbeae7}
+  .mini-reset svg,.mini-clear svg{width:14px;height:14px}
+
+  /* ---------- Preview ---------- */
+  .preview{flex:1 1 auto;overflow-y:auto;padding:34px 30px 70px;background:radial-gradient(circle at 30% 0%,#dfe5ea,transparent 60%),var(--field-bg-2);display:flex;justify-content:center}
+  .doc{width:100%;max-width:760px;background:var(--paper);border:1px solid var(--paper-edge);border-radius:3px;box-shadow:var(--shadow);padding:62px 70px 70px;font-family:'Lora',Georgia,serif;color:var(--doc-text);font-size:13.5px;line-height:1.72;height:max-content}
+  .doc .doc-title{text-align:center;font-weight:600;font-size:15.5px;line-height:1.45;margin:0 0 4px;letter-spacing:.2px}
+  .doc .doc-sub{text-align:center;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent-ink);font-family:'Inter',sans-serif;font-weight:600;margin-bottom:26px}
+  .doc p{margin:0 0 11px;text-align:justify}
+  .doc h2{font-family:'Inter',sans-serif;font-size:12.5px;font-weight:700;letter-spacing:.4px;margin:24px 0 9px;color:var(--ink);text-transform:uppercase}
+  .doc .lvl2{padding-left:18px;margin-bottom:8px}
+  .doc ol,.doc ul{margin:0 0 11px;padding-left:30px}
+  .doc li{margin-bottom:4px;text-align:justify}
+  .doc .sign{margin-top:42px;text-align:center;font-size:13px}
+  .doc .sign .line{width:230px;border-top:1px solid #9aa3aa;margin:34px auto 6px}
+  .doc .sign b{font-weight:600}
+  .missing{background:var(--accent-soft);color:var(--accent-ink);border-radius:3px;padding:0 4px;font-family:'Inter',sans-serif;font-size:11px;font-weight:600;white-space:nowrap}
+
+  .mtoggle{display:none}
+
+  @media (max-width:880px){
+    .workspace{position:relative}
+    .panel,.preview{width:100%;max-width:none;min-width:0;height:100%}
+    .preview{position:absolute;inset:0}
+    body.show-preview .panel{display:none}
+    body:not(.show-preview) .preview{display:none}
+    .mtoggle{display:flex;flex:0 0 auto;background:var(--slate-2);padding:6px;gap:6px}
+    .mtoggle button{flex:1;background:transparent;color:#9fb0bd;padding:10px;border-radius:7px;font-size:13px}
+    .mtoggle button.on{background:var(--accent);color:#fff}
+    .doc{padding:38px 26px}
+    .topbar{padding:10px 12px}
+    .brand p{display:none}
+    .tb .lbl{display:none}
+    .tb{padding:9px 11px}
+    .sep{display:none}
+  }
+
+  @media print{
+    .topbar,.panel,.mtoggle{display:none!important}
+    .app,.workspace,.preview{display:block;height:auto;overflow:visible}
+    .preview{padding:0;background:#fff}
+    .doc{box-shadow:none;border:none;border-radius:0;max-width:none;width:100%;padding:0;font-size:11pt;color:#000}
+    .missing{background:none;color:#000;border:1px dashed #999;font-family:'Lora',serif;font-weight:400}
+    .doc h2{page-break-after:avoid}
+    @page{margin:2.2cm 2cm}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="flame">
+        <svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2c1 4-2 5-2 8a3 3 0 0 0 6 0c0-1-.4-2-.4-2 2 1.5 3.4 4 3.4 6.5A7 7 0 1 1 5 14c0-3 3-4 4-7 .6-1.8.6-3.5 3-5Z"/></svg>
+      </div>
+      <div>
+        <h1>Generador de Bases Legales</h1>
+        <p>Plantilla editable para concursos · Chile</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="tb btn-ghost" id="resetBtn" title="Restaurar todos los campos al ejemplo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        <span class="lbl">Restablecer ejemplo</span>
+      </button>
+      <button class="tb btn-ghost" id="clearBtn" title="Dejar todos los campos en blanco">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        <span class="lbl">Vaciar campos</span>
+      </button>
+      <div class="sep"></div>
+      <button class="tb btn-accent" id="pdfBtn" title="Abre el diálogo de impresión: elige «Guardar como PDF»">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+        <span class="lbl">Descargar PDF</span>
+      </button>
+      <button class="tb btn-dark" id="wordBtn" title="Descargar como documento Word editable (.doc)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13l1.5 5 1.5-4 1.5 4L14 13"/></svg>
+        <span class="lbl">Descargar Word</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="mtoggle">
+    <button id="mEdit" class="on">Editar</button>
+    <button id="mView">Vista previa</button>
+  </div>
+
+  <div class="workspace">
+    <aside class="panel">
+      <div class="panel-inner">
+        <p class="intro">Rellena los campos y el documento de la derecha se arma solo. Lo vacío aparece <b>resaltado</b>. El botón <b>↺</b> de cada campo restaura su ejemplo. Exporta con <b>PDF</b> o <b>Word</b>. <b>Nota:</b> los borradores no se guardan al cerrar la pestaña.</p>
+        <div id="formRoot"></div>
+      </div>
+    </aside>
+    <main class="preview">
+      <article class="doc" id="doc"></article>
+    </main>
+  </div>
+</div>
+
+<script>
+/* ===== Fecha de hoy (ejemplo dinámico para "Ciudad y fecha") ===== */
+const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+function fechaHoy(){const d=new Date();return `Santiago de Chile, a ${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;}
+
+/* ===== Configuración de campos (también define los ejemplos) ===== */
+const SECTIONS = [
+  { title:'Identificación', icon:'§', fields:[
+      {k:'ciudad', l:'Ciudad y fecha de elaboración', dyn:fechaHoy, d:fechaHoy()},
+      {k:'razon_social', l:'Razón social de la empresa', d:'GASCO GLP S.A.'},
+      {k:'nombre_corto', l:'Nombre corto (cómo se llamará en el texto)', d:'GASCO'},
+      {k:'rut_empresa', l:'RUT empresa', d:'96.568.740-8'},
+      {k:'nombre_repr', l:'Representante legal', d:'Fausto Oliva'},
+      {k:'tipo_cedula', l:'Tipo de cédula', type:'select', opts:['nacional de identidad','nacional de identidad para extranjeros'], d:'nacional de identidad para extranjeros'},
+      {k:'cedula_repr', l:'N° de cédula del representante', d:'22.909.193-K'},
+      {k:'domicilio_empresa', l:'Domicilio de la empresa', d:'calle Santo Domingo N°1061, comuna de Santiago, Región Metropolitana'},
+      {k:'nombre_concurso', l:'Nombre del concurso', d:'1 AÑO DE GAS GRATIS CON RUTPAY'},
+  ]},
+  { title:'Vigencia y cobertura', icon:'1', fields:[
+      {k:'periodo_inicio', l:'Inicio del período de vigencia', d:'1 de noviembre de 2025'},
+      {k:'periodo_fin', l:'Término del período de vigencia', d:'15 de noviembre de 2025'},
+      {k:'zona_cobertura', l:'Zona de cobertura', type:'area', d:'todas las comunas del territorio nacional, a excepción de la comuna de Isla de Pascua'},
+  ]},
+  { title:'Requisitos y participación', icon:'2', fields:[
+      {k:'edad_minima', l:'Edad mínima', d:'18'},
+      {k:'modo_participacion', l:'Modo de participar', hint:'(describe el mecanismo del sorteo)', type:'area', d:'Diariamente, durante el período de vigencia, se sorteará un (1) año de gas gratis entre todas las personas que hayan comprado y recibido correctamente su carga de gas a través de la miniapp de GASCO en Rutpay. Podrá participar toda persona que cumpla con los requisitos señalados precedentemente.'},
+  ]},
+  { title:'Premios', icon:'4', fields:[
+      {k:'descripcion_premio', l:'Descripción del premio', type:'area', d:'Un (1) año de gas gratis, equivalente a doce (12) cargas de quince (15) kilos, equivalente a 12 cupones de $30.000.'},
+      {k:'cantidad_premios', l:'Cantidad de premios a sortear', d:'15'},
+      {k:'fecha_entrega', l:'Fecha de entrega del premio', d:'3 de diciembre de 2025'},
+      {k:'detalle_entrega', l:'Detalle de la entrega', type:'area', d:'El premio consistirá en doce (12) cupones digitales de descuento, por un valor de $30.000 cada uno, los cuales serán cargados en Rutpay. Los cupones podrán ser utilizados exclusivamente en la miniapp de Gasco y tendrán una vigencia de doce (12) meses a contar de su fecha de entrega.'},
+  ]},
+  { title:'Sorteo y notificación', icon:'5', fields:[
+      {k:'fecha_sorteo', l:'Fecha(s) del sorteo', type:'area', d:'diariamente a partir del día 2 de noviembre, hasta el día 18 de noviembre de 2025'},
+      {k:'plataforma_sorteo', l:'Plataforma de sorteo aleatorio', d:'www.sortea2.com'},
+      {k:'canales_anuncio', l:'Canales donde se anuncia al ganador', type:'area', d:'la cuenta oficial de Instagram de GASCO @gascochile y la página web de Rutpay (www.Rutpay.cl); además, serán contactados por GASCO a través de correo electrónico'},
+      {k:'plazo_confirmacion', l:'Plazo para confirmar datos', d:'dos (2) días hábiles'},
+  ]},
+  { title:'Reclamos y datos personales', icon:'7', fields:[
+      {k:'direccion_reclamos', l:'Dirección para reclamos', d:'calle Santo Domingo N°1061, comuna y ciudad de Santiago'},
+      {k:'correo_reclamos', l:'Correo para reclamos', hint:'(opcional)', d:''},
+      {k:'plazo_reclamo', l:'Plazo para presentar reclamos', d:'treinta (30) días corridos'},
+      {k:'comuna_jurisdiccion', l:'Comuna de jurisdicción de tribunales', d:'Santiago'},
+      {k:'ley_datos', l:'Ley de protección de datos', hint:'(21.719 actual · 19.628 antigua)', d:'21.719'},
+  ]},
+  { title:'Aceptación y personería', icon:'9', fields:[
+      {k:'web_bases', l:'Sitio web donde se publican las bases', d:'www.gasco.cl'},
+      {k:'direccion_ejemplar', l:'Dirección donde está el ejemplar físico', d:'calle Rosas N°1062, comuna y ciudad de Santiago'},
+      {k:'fecha_escritura', l:'Fecha de la escritura pública de personería', d:'23 de julio de 2025'},
+      {k:'notario', l:'Notario(a) de la personería', d:'la Notaría de Santiago de don Luis Ignacio Manquehual Mery'},
+      {k:'firmante', l:'Nombre del firmante (P.P. empresa)', d:'FAUSTO NICOLÁS OLIVA'},
+  ]},
+];
+
+/* ===== Estado y ejemplos ===== */
+const DEFAULTS={}, DYN={};
+SECTIONS.forEach(s=>s.fields.forEach(f=>{DEFAULTS[f.k]=f.d; if(f.dyn) DYN[f.k]=f.dyn;}));
+const state={};
+SECTIONS.forEach(s=>s.fields.forEach(f=>state[f.k]=f.d));
+function exampleFor(k){return DYN[k]?DYN[k]():DEFAULTS[k];}
+
+/* ===== Construcción del formulario ===== */
+const formRoot=document.getElementById('formRoot');
+const RESET_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>';
+const CLEAR_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>';
+SECTIONS.forEach((sec,i)=>{
+  const det=document.createElement('details'); det.className='sec'; if(i===0) det.open=true;
+  det.innerHTML=`<summary><span class="sec-num">${sec.icon}</span>${sec.title}
+    <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg></summary>`;
+  const body=document.createElement('div'); body.className='sec-body';
+  sec.fields.forEach(f=>{
+    const wrap=document.createElement('div'); wrap.className='field';
+    const hint=f.hint?` <span class="hint">${f.hint}</span>`:'';
+    let ctrl;
+    if(f.type==='area') ctrl=`<textarea data-k="${f.k}">${f.d}</textarea>`;
+    else if(f.type==='select') ctrl=`<select data-k="${f.k}">${f.opts.map(o=>`<option ${o===f.d?'selected':''}>${o}</option>`).join('')}</select>`;
+    else ctrl=`<input type="text" data-k="${f.k}" value="${f.d.replace(/"/g,'&quot;')}">`;
+    wrap.innerHTML=`<label>${f.l}${hint}</label>
+      <div class="field-ctrl">
+        ${ctrl}
+        <button type="button" class="mini-reset" data-reset="${f.k}" title="Restablecer ejemplo de este campo">${RESET_ICON}</button>
+        <button type="button" class="mini-clear" data-clear="${f.k}" title="Borrar este campo">${CLEAR_ICON}</button>
+      </div>`;
+    body.appendChild(wrap);
+  });
+  det.appendChild(body); formRoot.appendChild(det);
+});
+
+/* ===== Edición ===== */
+formRoot.addEventListener('input',e=>{
+  const k=e.target.getAttribute('data-k');
+  if(k){ state[k]=e.target.value; render(); }
+});
+/* ===== Reset (↺) y borrar (x) por campo ===== */
+formRoot.addEventListener('click',e=>{
+  const rb=e.target.closest('[data-reset]');
+  const cb=e.target.closest('[data-clear]');
+  if(rb){
+    const k=rb.getAttribute('data-reset'); const val=exampleFor(k);
+    state[k]=val;
+    const el=document.querySelector(`[data-k="${k}"]`); if(el) el.value=val;
+    render();
+  }else if(cb){
+    const k=cb.getAttribute('data-clear');
+    state[k]='';
+    const el=document.querySelector(`[data-k="${k}"]`); if(el) el.value='';
+    render();
+  }
+});
+
+/* ===== Helpers de render ===== */
+function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function v(k,fb){const val=(state[k]||'').trim(); return val?esc(val):`<span class="missing">[${(fb||k).toUpperCase()}]</span>`;}
+function paras(k,fb){const val=(state[k]||'').trim(); if(!val) return `<p>${v(k,fb)}</p>`; return esc(val).split(/\n{1,}/).filter(Boolean).map(p=>`<p>${p}</p>`).join('');}
+
+/* ===== Render del documento ===== */
+const doc=document.getElementById('doc');
+function render(){
+  const correoBlock=(state.correo_reclamos||'').trim()?` o al correo electrónico ${esc(state.correo_reclamos.trim())}`:'';
+  doc.innerHTML=`
+  <p class="doc-sub">Bases y Condiciones del Concurso</p>
+  <p class="doc-title">«${v('nombre_concurso','nombre del concurso')}»</p>
+
+  <p>En ${v('ciudad','ciudad y fecha')}, por parte de ${v('razon_social','razón social')}, RUT N°${v('rut_empresa','rut')}, representada por don(ña) ${v('nombre_repr','representante')}, cédula ${esc(state.tipo_cedula||'nacional de identidad')} N°${v('cedula_repr','cédula')}, ambos domiciliados —para estos efectos— en ${v('domicilio_empresa','domicilio')} (en adelante «${v('nombre_corto','nombre corto')}»), se ha organizado el Concurso denominado «${v('nombre_concurso','nombre del concurso')}» (en adelante el «Concurso»), el que se rige por las siguientes bases (en adelante las «Bases»), cuyas cláusulas son las siguientes:</p>
+
+  <h2>Primero: Período y área de vigencia del Concurso</h2>
+  <p class="lvl2">1.1. El Concurso se llevará a cabo en el período comprendido entre el ${v('periodo_inicio','inicio')} y el ${v('periodo_fin','término')}, ambas fechas inclusive (en adelante el «Período de Vigencia»).</p>
+  <p class="lvl2">1.2. La cobertura del Concurso se extenderá a ${v('zona_cobertura','zona de cobertura')} (en adelante, la «Zona de Cobertura»).</p>
+  <p class="lvl2">1.3. En consecuencia, se deja constancia que el presente Concurso no será aplicable en aquellas comunas o sectores distintos de los antes identificados en el numeral precedente.</p>
+
+  <h2>Segundo: Requisitos y condiciones para participar</h2>
+  <p class="lvl2">2.1. Requisitos generales. Podrán participar en este Concurso todos quienes cumplan con los siguientes requisitos:</p>
+  <ol type="i" style="padding-left:42px">
+    <li>Ser persona natural mayor de ${v('edad_minima','edad')} años.</li>
+    <li>Tener residencia o domicilio en la Zona de Cobertura.</li>
+    <li>Cumplir con las condiciones establecidas en la Sección 2.2 siguiente y no estar excluido conforme a la cláusula tercera de las Bases.</li>
+  </ol>
+  <p class="lvl2">2.2. Modo de participar en el Concurso:</p>
+  ${paras('modo_participacion','modo de participación')}
+
+  <h2>Tercero: Exclusiones</h2>
+  <p>Se deja expresa constancia que no podrán participar en este Concurso las siguientes personas:</p>
+  <ol type="i" style="padding-left:42px">
+    <li>Accionistas, directores, gerentes y personal dependiente de ${v('nombre_corto','la empresa')} y sus empresas relacionadas;</li>
+    <li>Quienes formen parte de la red de comercialización (subdistribuidores, venta directa, etc.) de ${v('nombre_corto','la empresa')} y sus trabajadores, tales como choferes, asistentes de repartidor, entre otros;</li>
+    <li>Cónyuges y parientes de las personas descritas en los puntos (i) y (ii) precedentes, hasta el primer grado de afinidad inclusive.</li>
+  </ol>
+  <p>Sin perjuicio de lo anterior, ${v('nombre_corto','la empresa')} se reserva la facultad de excluir a quienes participen del Concurso si, a su juicio exclusivo, cometen cualquier infracción a las disposiciones contenidas en estas Bases, en especial por no cumplir con alguno de los requisitos expuestos en la Cláusula Segunda o por aplicación de las causales de exclusión señaladas.</p>
+
+  <h2>Cuarto: De los premios</h2>
+  <p class="lvl2">4.1. Descripción de los premios. Quienes hayan cumplido con los requisitos señalados en la Cláusula Segunda estarán participando por el siguiente premio (en adelante el «Premio»):</p>
+  ${paras('descripcion_premio','descripción del premio')}
+  <p class="lvl2">Se sortearán ${v('cantidad_premios','cantidad')} premios.</p>
+  <p class="lvl2">4.2. Plazo de entrega de los premios. Los clientes serán contactados por ${v('nombre_corto','la empresa')} para la confirmación de sus datos y la entrega de los premios se realizará el día ${v('fecha_entrega','fecha de entrega')}.</p>
+  ${paras('detalle_entrega','detalle de la entrega')}
+  <p class="lvl2">4.3. Extensión de la responsabilidad. La responsabilidad de ${v('nombre_corto','la empresa')} es la entrega del premio descrito en el numeral 4.1 a los ganadores. Bajo ningún concepto deberá responder o reintegrar al ganador costo o gasto alguno en que este incurra por su participación en el presente Concurso, ni por cualquier otra causa.</p>
+  <p class="lvl2">4.4. Imposibilidad de reemplazo. Los ganadores no podrán solicitar ni efectuar cambio del Premio, ni canjearlo por dinero en efectivo u otra alternativa. Si el ganador desiste de aceptar y/o usar el Premio, no tendrá derecho a compensación o indemnización de ningún tipo. El Premio es de carácter personal e intransferible.</p>
+  <p class="lvl2">4.5. Modificación de los premios. ${v('nombre_corto','la empresa')} podrá modificar total o parcialmente el Premio en casos calificados, por otros de la misma especie e igual o mayor valor, velando por no causar perjuicio al ganador y en cumplimiento de la Ley N°19.496, sin que ello genere derecho a indemnización alguna.</p>
+
+  <h2>Quinto: Sorteo</h2>
+  <p class="lvl2">5.1. Fecha y lugar del sorteo. El Sorteo y la elección del ganador se realizarán ${v('fecha_sorteo','fecha del sorteo')}. Los ganadores serán anunciados por ${v('canales_anuncio','canales de anuncio')}.</p>
+  <p class="lvl2">5.2. Sorteo del ganador. El sorteo se realizará aleatoriamente mediante la plataforma ${v('plataforma_sorteo','plataforma')}, con el objeto de seleccionar al ganador que cumpla con los requisitos de las presentes Bases. En caso de que el participante seleccionado no se ajuste a los requisitos, se procederá a seleccionar a otro participante como ganador en su reemplazo.</p>
+  <p class="lvl2">5.3. Notificación al ganador. Se notificará al ganador vía correo electrónico y llamado telefónico para coordinar y confirmar sus datos. El ganador deberá confirmar sus datos en un plazo máximo de ${v('plazo_confirmacion','plazo')} contados desde que haya sido contactado por ${v('nombre_corto','la empresa')}. En caso de que el ganador no responda dentro del plazo señalado, se entenderá que ha desistido del premio, sin derecho a indemnización o compensación de ninguna especie.</p>
+  <p class="lvl2">5.4. Reserva de derechos. ${v('nombre_corto','la empresa')} se reserva el derecho de cancelar, modificar o suspender el Concurso por circunstancias no previstas ajenas a su voluntad, ajustándose toda modificación a la legislación vigente.</p>
+  <p class="lvl2">5.5. Caso fortuito o fuerza mayor. ${v('nombre_corto','la empresa')} no tendrá responsabilidad alguna por retraso o incumplimiento del Concurso cuando la causa resulte de caso fortuito o fuerza mayor, en los términos del artículo 45 del Código Civil.</p>
+
+  <h2>Sexto: Autorización</h2>
+  <p>Las personas que participen otorgan desde ya autorización a ${v('nombre_corto','la empresa')} para el uso de su nombre e imagen, para la filmación, fotografía y difusión de los mismos en comerciales para televisión, radio, prensa escrita, redes sociales u otros medios que considere convenientes, y para testimonios, sin que dicha autorización conceda derecho a contraprestación o indemnización alguna. Asimismo, otorgan autorización expresa para la utilización de sus datos personales para envío de campañas, informaciones, comunicaciones y análisis estadísticos, de conformidad con lo dispuesto en la Ley N°${v('ley_datos','ley de datos')}.</p>
+
+  <h2>Séptimo: Resolución de controversias</h2>
+  <p>En caso de reclamos o disconformidad de algún participante, deberán formularse por escrito en la oficina central de ${v('nombre_corto','la empresa')} ubicada en ${v('direccion_reclamos','dirección de reclamos')}${correoBlock}, explicando de forma precisa y clara la situación que lo motiva, y presentarse dentro de los ${v('plazo_reclamo','plazo')} siguientes a la fecha en que se verifique el hecho que lo origina. Si tras la respuesta otorgada se mantiene el reclamo, la discrepancia será sometida al conocimiento de los Tribunales Ordinarios de Justicia de la comuna y ciudad de ${v('comuna_jurisdiccion','comuna')}, fijándose domicilio en dicha comuna para estos efectos, sin perjuicio de los derechos legales que correspondan al participante.</p>
+
+  <h2>Octavo: Reserva de acciones</h2>
+  <p>${v('nombre_corto','la empresa')} se reserva el derecho de iniciar las acciones legales que procedan en caso de detectar irregularidades durante la vigencia del Concurso, incluyendo, pero no limitado a, falsificación, suplantación de identidad y adulteración de la información.</p>
+
+  <h2>Noveno: Conocimiento y aceptación de las Bases</h2>
+  <p>Las presentes Bases se encontrarán en el sitio web ${v('web_bases','sitio web')}, y un ejemplar completo estará disponible en la oficina ubicada en ${v('direccion_ejemplar','dirección del ejemplar')}. La participación en el Concurso implica el total conocimiento y aceptación de las presentes Bases, así como de las decisiones que ${v('nombre_corto','la empresa')} pueda adoptar respecto de cualquier cuestión no prevista. ${v('nombre_corto','la empresa')} se reserva el derecho de modificar, ampliar y/o aclarar estas Bases y la facultad de decisión respecto de toda situación no prevista en ellas.</p>
+
+  <h2>Personería</h2>
+  <p>La personería de don(ña) ${v('nombre_repr','representante')} para representar a ${v('razon_social','razón social')} consta en escritura pública de fecha ${v('fecha_escritura','fecha de escritura')}, suscrita en ${v('notario','notaría')}.</p>
+
+  <div class="sign">
+    <div class="line"></div>
+    <b>${v('firmante','firmante')}</b><br>
+    P.P. ${v('razon_social','razón social')}
+  </div>`;
+}
+render();
+
+/* ===== Acciones globales ===== */
+document.getElementById('resetBtn').onclick=()=>{
+  if(!confirm('¿Restablecer todos los campos al ejemplo original?')) return;
+  SECTIONS.forEach(s=>s.fields.forEach(f=>{const val=exampleFor(f.k); state[f.k]=val; const el=document.querySelector(`[data-k="${f.k}"]`); if(el) el.value=val;}));
+  render();
+};
+document.getElementById('clearBtn').onclick=()=>{
+  if(!confirm('¿Eliminar todos los valores y dejar los campos en blanco?')) return;
+  SECTIONS.forEach(s=>s.fields.forEach(f=>{state[f.k]=''; const el=document.querySelector(`[data-k="${f.k}"]`); if(el) el.value='';}));
+  render();
+};
+document.getElementById('pdfBtn').onclick=()=>window.print();
+
+/* ===== Descargar Word (.doc editable) ===== */
+function fileName(){
+  let s=(state.nombre_concurso||'bases').replace(/[^\w\sáéíóúñ.-]/gi,'').trim().replace(/\s+/g,'_').slice(0,60);
+  return s||'bases';
+}
+document.getElementById('wordBtn').onclick=()=>{
+  const wStyle=`
+    @page{size:21cm 29.7cm;margin:2.2cm 2cm}
+    body{font-family:'Georgia','Times New Roman',serif;font-size:11pt;color:#000;line-height:1.5}
+    .doc-sub{text-align:center;font-size:9pt;letter-spacing:2px;text-transform:uppercase;color:#8a3d10;font-weight:bold;margin:0 0 4px}
+    .doc-title{text-align:center;font-weight:bold;font-size:14pt;margin:0 0 18px}
+    h2{font-size:11pt;font-weight:bold;text-transform:uppercase;margin:16px 0 6px}
+    p{text-align:justify;margin:0 0 8px}
+    .lvl2{margin-left:14px}
+    ol{margin:0 0 8px 30px} li{text-align:justify;margin-bottom:3px}
+    .sign{text-align:center;margin-top:36px}
+    .sign .line{border-top:1px solid #555;width:230px;margin:28px auto 5px}
+    .missing{font-weight:normal}
+  `;
+  const pre="<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Bases del Concurso</title><style>"+wStyle+"</style></head><body>";
+  const html=pre+doc.innerHTML+"</body></html>";
+  const blob=new Blob(['\ufeff'+html],{type:'application/msword'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='Bases_'+fileName()+'.doc';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+};
+
+/* ===== Toggle móvil ===== */
+const mEdit=document.getElementById('mEdit'), mView=document.getElementById('mView');
+mEdit.onclick=()=>{document.body.classList.remove('show-preview');mEdit.classList.add('on');mView.classList.remove('on');};
+mView.onclick=()=>{document.body.classList.add('show-preview');mView.classList.add('on');mEdit.classList.remove('on');};
+</script>
+</body>
+</html>
